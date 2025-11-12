@@ -1,7 +1,6 @@
 import os
 import glob
 import time
-a = time.time()
 
 from setuptools import find_packages, setup
 
@@ -26,6 +25,8 @@ class Deps:
 about = {}
 with open("mindsdb/__about__.py") as fp:
     exec(fp.read(), about)
+a = time.time()
+print(a)
 
 
 with open("README.md", "r", encoding="utf8") as fh:
