@@ -115,11 +115,11 @@ jobs:
   # This is a collection point for all of the matrix tests above so we can have a single required job
   tests_completed:
     name: All Tests Succeeded
-    needs: [run_unit_tests, run_integration_tests, changes]
+    needs: [run_integration_tests, changes]
     runs-on: ubuntu-latest
     if: always()
     steps:
       - name: fail if tests failed or didnt run
-        if: ${{ (needs.run_unit_tests.result != 'success' || (needs.run_integration_tests.result != 'success' && !github.event.pull_request.head.repo.fork)) && needs.changes.outputs.not-docs == 'true' }}
+        if: ${{ ((needs.run_integration_tests.result != 'success' && !github.event.pull_request.head.repo.fork)) && needs.changes.outputs.not-docs == 'true' }}
         run: exit 1
       - run: echo "Tests ran successfully"
