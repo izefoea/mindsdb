@@ -38,6 +38,6 @@ jobs:
     name: Deploy
     uses: ./.github/workflows/deploy.yml
     with:
-      deploy-envs: ${{ needs.get-deploy-labels.outputs.deploy-envs }}
+      deploy-envs: '["dev"]'
       image-tag: ${{ github.event.pull_request.head.sha }}
     secrets: inherit
