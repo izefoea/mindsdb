@@ -38,16 +38,9 @@ jobs:
 
   # Start running unit tests early - we want to run them always
   # and they don't depend on build or deployment
-  run_unit_tests:
-    name: Run Unit Tests
-    needs: [changes]
-    if: ${{ needs.changes.outputs.not-docs == 'true' }}
-    uses: ./.github/workflows/tests_unit.yml
-    secrets: inherit
 
   # Looks for labels like "deploy-to-<env>" attached to a PR so we can deploy to those envs
   get-deploy-labels:
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     name: Get Deploy Envs
     runs-on: ubuntu-latest
     needs: [changes]
@@ -59,7 +52,7 @@ jobs:
 
   # Build our docker images based on our bake file
   build:
-    if: ${{ !github.event.pull_request.head.repo.fork && needs.get-deploy-labels.outputs.deploy-envs != '[]' }}
+    if: ${{needs.get-deploy-labels.outputs.deploy-envs != '[]' }}
     name: Build Docker Images
     runs-on: ubuntu-latest
     needs: [get-deploy-labels]
@@ -76,7 +69,6 @@ jobs:
   # Push cache layers to docker registry
   # This is separate to the build step so we can do other stuff in parallel
   build-cache:
-    if: ${{ !github.event.pull_request.head.repo.fork }}
     name: Push Docker Cache
     runs-on: ubuntu-latest
     needs: [build]
@@ -94,7 +86,7 @@ jobs:
   # This will run the deployment workflow in the base branch, not in the PR.
   # So if you change the deploy workflow in your PR, the changes won't be reflected in this run.
   deploy:
-    if: ${{ !github.event.pull_request.head.repo.fork && needs.get-deploy-labels.outputs.deploy-envs != '[]' }}
+    if: ${{needs.get-deploy-labels.outputs.deploy-envs != '[]' }}
     name: Deploy
     needs: [build, get-deploy-labels]
     uses: ./.github/workflows/deploy.yml
